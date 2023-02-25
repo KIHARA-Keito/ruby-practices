@@ -37,15 +37,12 @@ puts "      #{month}月 #{year}"
 puts "日 月 火 水 木 金 土"
 
 # カレンダー日にち表示
-(Date.new(year, month, 1).day..Date.new(year, month, -1).day).each do |date| #日数分繰り返し
-  date_display = date.to_s.rjust(2).ljust(3) if date.to_s.size == 1 #日付1桁の場合左右にスペース追加
-  date_display = date.to_s.ljust(3) if date.to_s.size == 2 #日付2桁の場合左にスペース追加
-  date_of_week = Date.new(year, month, date).wday #曜日取得
-  if date == 1 #1日の場合の曜日位置移動（スペース追加）
-    date_of_week.times do |i|
-      date_display = "   #{date_display}"
-    end
+(Date.new(year, month, 1)..Date.new(year, month, -1)).each do |date| #日数分繰り返し
+  date_display = date.day.to_s.rjust(2).ljust(3) #日付にスペース追加
+  date_of_week = date.wday #曜日取得
+  if date.day == 1 #1日の場合の曜日位置移動（スペース追加）
+    date_display = "   " * date_of_week + date_display
   end
-  date_display = date_display + "\n" if date_of_week == 6 #土曜日の場合改行追加
   print date_display
+  puts if date_of_week == 6 #土曜日の場合改行追加
 end
