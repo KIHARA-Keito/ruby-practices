@@ -46,3 +46,4 @@ puts "日 月 火 水 木 金 土"
   print date_display
   puts if date_of_week == 6 #土曜日の場合改行追加
 end
+puts
