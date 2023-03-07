@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 LAST_FRAME_NUMBER = 19
-scores = ARGV[0].split(',')
 
+scores = ARGV[0].split(',')
 shots = []
 scores.each do |shot|
   if shot == 'X'
