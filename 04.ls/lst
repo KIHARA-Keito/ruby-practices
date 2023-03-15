@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+COLUMN = 3
+
+def main
+  files = []
+  max_file_name_length = 0
+  Dir.each_child('.') do |file|
+    files << file unless file.match?(/^\./)
+    max_file_name_length = file.length if max_file_name_length < file.length
+  end
+  two_dimension_files = two_dimension_array(files)
+  sorted_files = sort_array(two_dimension_files)
+  display(sorted_files, max_file_name_length + 4)
+end
+
+def two_dimension_array(files)
+  row = (files.size.to_f / COLUMN).ceil
+  files.sort.each_slice(row).to_a.map do |arr|
+    arr.values_at(0..row - 1)
+  end
+end
+
+def sort_array(files)
+  files.transpose.flatten.map do |item|
+    item.nil? ? '' : item
+  end
+end
+
+def display(files, width)
+  files.each.with_index(1) do |file, i|
+    print file.ljust(width)
+    puts if (i % COLUMN).zero?
+  end
+end
+
+main
