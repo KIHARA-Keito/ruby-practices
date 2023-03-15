@@ -17,15 +17,11 @@ end
 
 def two_dimension_array(files)
   row = (files.size.to_f / COLUMN).ceil
-  files.sort.each_slice(row).to_a.map do |file|
-    file.values_at(0..row - 1)
-  end
+  files.sort.each_slice(row).to_a.map { |file| file.values_at(0..row - 1) }
 end
 
 def sort_array(files)
-  files.transpose.flatten.map do |file|
-    file.nil? ? '' : file
-  end
+  files.transpose.flatten.map { |file| file.nil? ? '' : file }
 end
 
 def display(files, width)
