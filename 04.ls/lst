@@ -17,14 +17,14 @@ end
 
 def two_dimension_array(files)
   row = (files.size.to_f / COLUMN).ceil
-  files.sort.each_slice(row).to_a.map do |arr|
-    arr.values_at(0..row - 1)
+  files.sort.each_slice(row).to_a.map do |file|
+    file.values_at(0..row - 1)
   end
 end
 
 def sort_array(files)
-  files.transpose.flatten.map do |item|
-    item.nil? ? '' : item
+  files.transpose.flatten.map do |file|
+    file.nil? ? '' : file
   end
 end
 
