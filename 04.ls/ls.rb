@@ -11,7 +11,7 @@ def main
     max_filename_width  = file.length if max_filename_width  < file.length
   end
   two_dimensional_files = divide_into_rows(files)
-  sorted_files = flatten_set_empty(two_dimensional_files)
+  sorted_files = flatten_nil_empty(two_dimensional_files)
   display_files(sorted_files, max_filename_width  + 4)
 end
 
