@@ -20,7 +20,7 @@ def divide_into_rows(files)
   files.sort.each_slice(number_rows).to_a.map { |row| row.values_at(0..number_rows - 1) }
 end
 
-def flatten_set_empty(files)
+def flatten_nil_empty(files)
   files.transpose.flatten.map { |file| file.nil? ? '' : file }
 end
 
