@@ -1,16 +1,23 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'optparse'
+
 COLUMNS = 3
 
 def main
   files = []
-  max_filename_width  = 0
-  Dir.each_child('.') do |file|
-    files << file unless file.match?(/^\./)
+  max_filename_width = 0
+  is_option_a = option?('a')
+  Dir.foreach('.') do |file|
+    files << file if is_option_a || !file.match?(/^\./)
     max_filename_width = file.length if max_filename_width < file.length
   end
   display_files(files, max_filename_width + 4)
+end
+
+def option?(argument)
+  ARGV.getopts(argument)[argument]
 end
 
 def split_files_by_row(files)
