@@ -8,9 +8,9 @@ COLUMNS = 3
 def main
   files = []
   max_filename_width = 0
-  option = ARGV.getopts('a')
+  options = ARGV.getopts('a')
   Dir.foreach('.') do |file|
-    files << file if option['a'] || !file.match?(/^\./)
+    files << file if options['a'] || !file.match?(/^\./)
     max_filename_width = file.length if max_filename_width < file.length
   end
   display_files(files, max_filename_width + 4)
