@@ -5,6 +5,7 @@ require 'optparse'
 require 'etc'
 
 COLUMNS = 3
+COLUMNS_GUTTER = 4
 
 def main
   options = ARGV.getopts('l')
@@ -17,7 +18,7 @@ def main
   if options['l']
     display_one_line(files)
   else
-    display_multiple_lines(files, max_filename_width + 4)
+    display_multiple_lines(files, max_filename_width)
   end
 end
 
@@ -27,6 +28,7 @@ def split_files_by_row(files)
 end
 
 def display_multiple_lines(files, width)
+  width += COLUMNS_GUTTER
   split_files_by_row(files).transpose.each do |rows|
     rows.each do |file|
       file = file.nil? ? '' : file
