@@ -8,23 +8,24 @@ COLUMNS = 3
 COLUMNS_GUTTER = 4
 
 def main
-  options = ARGV.getopts('l')
+  options = ARGV.getopts('arl')
   files = []
   max_filename_width = 0
   Dir.foreach('.') do |file|
-    files << file unless file.match?(/^\./)
+    files << file if options['a'] || !file.match?(/^\./)
     max_filename_width = file.length if max_filename_width < file.length
   end
+  files_sorted = options['r'] ? files.sort.reverse : files.sort
   if options['l']
-    display_one_line(files)
+    display_one_line(files_sorted)
   else
-    display_multiple_lines(files, max_filename_width)
+    display_multiple_lines(files_sorted, max_filename_width)
   end
 end
 
 def split_files_by_row(files)
   number_rows = (files.size.to_f / COLUMNS).ceil
-  files.sort.each_slice(number_rows).to_a.map { |row| row.values_at(0..number_rows - 1) }
+  files.each_slice(number_rows).to_a.map { |row| row.values_at(0..number_rows - 1) }
 end
 
 def display_multiple_lines(files, width)
@@ -47,7 +48,7 @@ def display_one_line(files)
     file_blocks += File.stat(file).blocks
   end
   puts "total #{file_blocks}"
-  files.sort.each do |file|
+  files.each do |file|
     puts file_status_join(file, max_filesize_width)
   end
 end
@@ -55,7 +56,7 @@ end
 def file_status_join(file, width)
   file_stat = File.stat(file)
   mode = file_mode(file_stat.mode.to_s(8).rjust(6, '0'))
-  link = file_stat.nlink
+  link = file_stat.nlink.to_s.rjust(2)
   user = Etc.getpwuid(file_stat.uid).name
   group = Etc.getgrgid(file_stat.gid).name
   size = file_stat.size.to_s.rjust(width + 1)
