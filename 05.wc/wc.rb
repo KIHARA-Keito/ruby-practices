@@ -32,7 +32,7 @@ def render_input(input, params)
 end
 
 def render_argv(argv, params)
-  row_data = argv.map { |path| build_all_status(path, params) }
+  row_data = argv.map { |path| build_argv_status(path, params) }
   max_sizes = max_size_map(row_data)
   body = row_data.map do |data|
     format_body(data, params, max_sizes)
@@ -45,7 +45,7 @@ def render_argv(argv, params)
   end
 end
 
-def build_all_status(path, params)
+def build_argv_status(path, params)
   file = File.open(path, 'r')
   file_content = file.read
   row_data = build_status(params, file1: file_content, file2: file)
