@@ -7,7 +7,7 @@ def main
   argv = ARGV
   params = setup_params(argv.getopts('clw'))
   if argv.empty?
-    input = $stdin.read.gsub(/\s+/, "\n")
+    input = $stdin.read
     puts render_input(input, params)
   else
     puts render_argv(argv, params)
@@ -25,7 +25,7 @@ def setup_params(options)
 end
 
 def render_input(input, params)
-  row_data = build_status(params, file1: input)
+  row_data = build_status(params, input)
   max_sizes = max_size_map([row_data])
   status = format_status(row_data, params, max_sizes)
   "#{status[:lines]}#{status[:words]}#{status[:bytesize]}"
@@ -46,18 +46,18 @@ def render_argv(argv, params)
 end
 
 def build_argv_status(path, params)
-  file = File.open(path, 'r')
-  file_content = file.read
-  row_data = build_status(params, file1: file_content, file2: file)
+  file_name = File.open(path, 'r')
+  file_content = file_name.read
+  row_data = build_status(params, file_content, file_name)
   row_data[:filename] = path
   row_data
 end
 
-def build_status(params, **content)
-  file = content[:file2].nil? ? content[:file1] : content[:file2]
+def build_status(params, file_content, file_name = nil)
+  file = file_name.nil? ? file_content : file_name
   row_data = {}
-  row_data[:lines] = content[:file1].lines.count.to_s if params[:lines]
-  row_data[:words] = content[:file1].split(/\s+|\n+|\t+/).size.to_s if params[:words]
+  row_data[:lines] = file_content.lines.count.to_s if params[:lines]
+  row_data[:words] = file_content.split(/\s+|\n+|\t+/).size.to_s if params[:words]
   row_data[:bytesize] = file.size.to_s if params[:bytes]
   row_data
 end
