@@ -6,12 +6,14 @@ require 'optparse'
 def main
   argv = ARGV
   params = setup_params(argv.getopts('clw'))
-  if argv.empty?
-    input = $stdin.read
-    puts render_input(input, params)
-  else
-    puts render_argv(argv, params)
-  end
+  input =
+    if argv.empty?
+      render($stdin.read, params)
+    else
+      file_name = true
+      render(argv, params, file_name)
+    end
+  puts input
 end
 
 def setup_params(options)
@@ -24,24 +26,24 @@ def setup_params(options)
   params
 end
 
-def render_input(input, params)
-  row_data = build_status(params, input)
-  max_sizes = max_size_map([row_data])
-  status = format_status(row_data, params, max_sizes)
-  "#{status[:lines]}#{status[:words]}#{status[:bytesize]}"
-end
-
-def render_argv(argv, params)
-  row_data = argv.map { |path| build_argv_status(path, params) }
-  max_sizes = max_size_map(row_data)
-  body = row_data.map do |data|
-    format_body(data, params, max_sizes)
-  end
-  if argv.size == 1
-    body
+def render(file_data, params, file_name = nil)
+  if file_name.nil?
+    row_data = build_status(params, file_data)
+    max_sizes = max_size_map([row_data])
+    status = format_status(row_data, params, max_sizes)
+    "#{status[:lines]}#{status[:words]}#{status[:bytesize]}"
   else
-    totals = build_totals(row_data, params, max_sizes)
-    [body, totals].join("\n")
+    row_data = file_data.map { |path| build_argv_status(path, params) }
+    max_sizes = max_size_map(row_data)
+    body = row_data.map do |data|
+      format_body(data, params, max_sizes)
+    end
+    if file_data.size == 1
+      body
+    else
+      totals = build_totals(row_data, params, max_sizes)
+      [body, totals].join("\n")
+    end
   end
 end
 
