@@ -6,14 +6,17 @@ require 'optparse'
 def main
   argv = ARGV
   params = setup_params(argv.getopts('clw'))
-  input =
+  row_data =
     if argv.empty?
-      render($stdin.read, params)
+      [$stdin.read].map { |data| build_status(params, data) }
     else
-      file_name = true
-      render(argv, params, file_name)
+      argv.map do |path|
+        file_name = File.open(path, 'r')
+        file_content = file_name.read
+        build_status(params, file_content, file_name, path)
+      end
     end
-  puts input
+  puts render(row_data, params)
 end
 
 def setup_params(options)
@@ -26,41 +29,24 @@ def setup_params(options)
   params
 end
 
-def render(file_data, params, file_name = nil)
-  if file_name.nil?
-    row_data = build_status(params, file_data)
-    max_sizes = max_size_map([row_data])
-    status = format_status(row_data, params, max_sizes)
-    "#{status[:lines]}#{status[:words]}#{status[:bytesize]}"
+def render(row_data, params)
+  max_sizes = max_size_map(row_data)
+  body = row_data.map { |data| format_body(data, params, max_sizes) }
+  if row_data.size == 1
+    body
   else
-    row_data = file_data.map { |path| build_argv_status(path, params) }
-    max_sizes = max_size_map(row_data)
-    body = row_data.map do |data|
-      format_body(data, params, max_sizes)
-    end
-    if file_data.size == 1
-      body
-    else
-      totals = build_totals(row_data, params, max_sizes)
-      [body, totals].join("\n")
-    end
+    totals = build_totals(row_data, params, max_sizes)
+    [body, totals].join("\n")
   end
 end
 
-def build_argv_status(path, params)
-  file_name = File.open(path, 'r')
-  file_content = file_name.read
-  row_data = build_status(params, file_content, file_name)
-  row_data[:filename] = path
-  row_data
-end
-
-def build_status(params, file_content, file_name = nil)
+def build_status(params, file_content, file_name = nil, path = nil)
   file = file_name.nil? ? file_content : file_name
   row_data = {}
   row_data[:lines] = file_content.lines.count.to_s if params[:lines]
   row_data[:words] = file_content.split(/\s+|\n+|\t+/).size.to_s if params[:words]
   row_data[:bytesize] = file.size.to_s if params[:bytes]
+  row_data[:filename] = path unless path.nil?
   row_data
 end
 
@@ -74,7 +60,7 @@ end
 
 def format_body(row_data, params, max_sizes)
   status = format_status(row_data, params, max_sizes)
-  filename = row_data[:filename]
+  filename = row_data[:filename] if row_data[:filename]
   "#{status[:lines]}#{status[:words]}#{status[:bytesize]} #{filename}"
 end
 
