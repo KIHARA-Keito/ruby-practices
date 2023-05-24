@@ -8,7 +8,7 @@ def main
   params = setup_params(argv.getopts('clw'))
   row_data =
     if argv.empty?
-      [$stdin.read].map { |data| build_status(params, data) }
+      [build_status(params, $stdin.read)]
     else
       argv.map do |path|
         file_name = File.open(path, 'r')
