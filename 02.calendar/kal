@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+require 'date'
+require 'optparse'
+
+# 表示させる月と年指定(初期設定：今月表示)
+month =  Date.today.month
+year = Date.today.year
+
+# オプション指定の処理
+MONTH_RANGE_START = 1
+MONTH_RANGE_END = 12
+YEAR_RANGE_START = 1970
+YEAR_RANGE_END = 2100
+
+begin
+  options = ARGV.getopts("m:y:")
+  if options["m"] #月指定がある場合
+    if options["m"].to_i >= MONTH_RANGE_START && options["m"].to_i <= MONTH_RANGE_END #月指定数値判定
+      month = options["m"].to_i #月指定(オプション設定)
+    else
+      abort("月指定は、1〜12の間の数字で指定してください。")
+    end
+  end
+  if options["y"] #年指定がある場合
+    if options["y"].to_i >= YEAR_RANGE_START && options["y"].to_i <= YEAR_RANGE_END #年指定数値判定
+      year = options["y"].to_i #年指定(オプション設定)
+    else
+      abort("年指定は、1970〜2100の間の数字で指定してください。")
+    end
+  end
+rescue => e
+  abort("例外が発生しました: #{e.message}")
+end
+
+# カレンダーの月・年と曜日表示
+puts "      #{month}月 #{year}"
+puts "日 月 火 水 木 金 土"
+
+# カレンダー日にち表示
+(Date.new(year, month, 1)..Date.new(year, month, -1)).each do |date| #日数分繰り返し
+  date_display = date.day.to_s.rjust(2).ljust(3) #日付にスペース追加
+  date_of_week = date.wday #曜日取得
+  if date.day == 1 #1日の場合の曜日位置移動（スペース追加）
+    date_display = "   " * date_of_week + date_display
+  end
+  print date_display
+  puts if date_of_week == 6 #土曜日の場合改行追加
+end
+puts
